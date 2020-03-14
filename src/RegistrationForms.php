@@ -21,6 +21,11 @@ class RegistrationForms extends DirectoryStackCommand {
 	/**
 	 * Generate a registration form with all custom user fields for testing purposes.
 	 *
+	 * ## OPTIONS
+	 *
+	 * [--title=<title>]
+	 * : Title of the form.
+	 *
 	 * @param array $args arguments.
 	 * @param array $assoc_args arguments.
 	 * @return void
@@ -54,17 +59,42 @@ class RegistrationForms extends DirectoryStackCommand {
 
 		if ( ! empty( $user_fields ) ) {
 			foreach ( $user_fields as $user_field ) {
+				if ( $user_field->type === 'file' ) {
+					continue;
+				}
 				$fields['fields_list'][] = array(
 					'field_id' => $user_field->getID(),
 				);
 			}
 		}
 
+		// Find the user email field because it's required.
+		$email_field = ( new \DirectoryStack\Models\UserField() )->where( 'metakey', '=', 'email' )->first();
+
+		$fields['fields_list'][] = array(
+			'field_id' => $email_field->getID(),
+		);
+
 		$registration_form->settings = $fields;
 
 		$registration_form->create();
 
 		WP_CLI::success( 'Registration form successfully created.' );
+
+	}
+
+	/**
+	 * Reset the registration froms database table.
+	 *
+	 * @param array $args arguments.
+	 * @param array $assoc_args arguments.
+	 * @return void
+	 */
+	public function reset( $args, $assoc_args ) {
+
+		$table = ( new \DirectoryStack\Database\RegistrationFormsTable() )->truncate();
+
+		WP_CLI::success( 'Registration forms have been successfully removed.' );
 
 	}
 

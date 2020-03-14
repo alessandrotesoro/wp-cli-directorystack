@@ -45,7 +45,7 @@ class UserFields extends DirectoryStackCommand {
 			$field->date_created  = $field->getDateTime();
 			$field->date_modified = $field->date_created;
 			$field->type          = $field_type;
-			$field->name          = $type_label;
+			$field->name          = "Demo {$type_label}";
 			$field->metakey       = "field_demo_{$field_type}";
 
 			$settings = array();
