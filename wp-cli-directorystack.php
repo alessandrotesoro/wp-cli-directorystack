@@ -28,3 +28,16 @@
  * @license   https://www.gnu.org/licenses/gpl-3.0.html GPL-3.0-or-later
  * @link      https://directorystack.com
  */
+
+namespace DirectoryStackCLI;
+
+use WP_CLI;
+
+// Bail if WP-CLI is not present.
+if ( ! defined( '\WP_CLI' ) ) {
+	return;
+}
+
+if ( file_exists( dirname( __FILE__ ) . '/vendor/autoload.php' ) ) {
+	require dirname( __FILE__ ) . '/vendor/autoload.php';
+}
