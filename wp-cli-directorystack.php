@@ -41,3 +41,34 @@ if ( ! defined( '\WP_CLI' ) ) {
 if ( file_exists( dirname( __FILE__ ) . '/vendor/autoload.php' ) ) {
 	require dirname( __FILE__ ) . '/vendor/autoload.php';
 }
+
+WP_CLI::add_hook(
+	'before_wp_load',
+	function() {
+
+		WP_CLI::add_command(
+			'ds',
+			DirectoryStackCommand::class,
+			array(
+				'before_invoke' => function() {
+					if ( ! class_exists( '\DirectoryStack\Plugin' ) ) {
+						WP_CLI::error( 'The DirectoryStack plugin is not active.' );
+					}
+				},
+			)
+		);
+
+		WP_CLI::add_command(
+			'ds userfields',
+			UserFields::class,
+			array(
+				'before_invoke' => function() {
+					if ( ! class_exists( '\DirectoryStack\Plugin' ) ) {
+						WP_CLI::error( 'The DirectoryStack plugin is not active.' );
+					}
+				},
+			)
+		);
+
+	}
+);
