@@ -47,6 +47,7 @@ class UserFields extends DirectoryStackCommand {
 			$field->type          = $field_type;
 			$field->name          = "Demo {$type_label}";
 			$field->metakey       = "field_demo_{$field_type}";
+			$field->priority      = $field->findAll()->count() + 1;
 
 			$settings = array();
 
