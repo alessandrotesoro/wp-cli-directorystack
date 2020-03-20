@@ -82,5 +82,17 @@ WP_CLI::add_hook(
 			)
 		);
 
+		WP_CLI::add_command(
+			'ds submissionforms',
+			SubmissionForms::class,
+			array(
+				'before_invoke' => function() {
+					if ( ! class_exists( '\DirectoryStack\Plugin' ) ) {
+						WP_CLI::error( 'The DirectoryStack plugin is not active.' );
+					}
+				},
+			)
+		);
+
 	}
 );
