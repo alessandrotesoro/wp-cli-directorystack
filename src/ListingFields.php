@@ -31,6 +31,71 @@ class ListingFields extends DirectoryStackCommand {
 	 */
 	public function generate( $args, $assoc_args ) {
 
+		$available_field_types = FieldsHelper::get_registered_listing_field_types( array( 'password', 'heading', 'social-profiles', 'map', 'listing-opening-hours' ) );
+
+		$faker = \Faker\Factory::create();
+
+		foreach ( $available_field_types as $field_type => $type_label ) {
+
+			$field                = new \DirectoryStack\Models\ListingField();
+			$field->date_created  = $field->getDateTime();
+			$field->date_modified = $field->date_created;
+			$field->type          = $field_type;
+			$field->name          = "Demo {$type_label}";
+			$field->metakey       = "field_demo_{$field_type}";
+			$field->priority      = $field->findAll()->count() + 1;
+
+			$settings = array();
+
+			if ( in_array( $field_type, array( 'select', 'radio', 'multiselect', 'multicheckbox' ), true ) ) {
+				$settings['selectable_options'] = array(
+					"demo_{$faker->randomNumber}" => array(
+						'option_name' => $faker->name,
+					),
+					"demo_{$faker->randomNumber}" => array(
+						'option_name' => $faker->name,
+					),
+					"demo_{$faker->randomNumber}" => array(
+						'option_name' => $faker->name,
+					),
+					"demo_{$faker->randomNumber}" => array(
+						'option_name' => $faker->name,
+					),
+					"demo_{$faker->randomNumber}" => array(
+						'option_name' => $faker->name,
+					),
+				);
+			}
+
+			switch ( $field_type ) {
+				case 'tax-radio':
+					$settings['taxonomy'] = 'listing_type';
+					break;
+				case 'tax-checkboxes':
+					$settings['taxonomy'] = 'listing_tag';
+					break;
+				case 'tax-cascade-select':
+					$settings['taxonomy'] = 'listing_location';
+					break;
+				case 'tax-cascade-multiselect':
+					$settings['taxonomy'] = 'listing_category';
+					break;
+				case 'tax-select':
+					$settings['taxonomy'] = 'listing_taxonomy_demo1';
+					break;
+				case 'tax-multiselect':
+					$settings['taxonomy'] = 'listing_taxonomy_demo2';
+					break;
+			}
+
+			if ( ! empty( $settings ) ) {
+				$field->settings = $settings;
+			}
+
+			$field->save();
+
+		}
+
 		WP_CLI::success( 'Successfully created random listing fields.' );
 
 	}
