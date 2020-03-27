@@ -38,9 +38,10 @@ class Listings extends DirectoryStackCommand {
 		$r = wp_parse_args(
 			$assoc_args,
 			array(
-				'number' => 10,
-				'user'   => 1,
-				'images' => true,
+				'number'  => 10,
+				'user'    => 1,
+				'images'  => true,
+				'form_id' => 1,
 			)
 		);
 
@@ -97,7 +98,6 @@ class Listings extends DirectoryStackCommand {
 			}
 
 			if ( $r['images'] === true ) {
-
 				// Create featured image.
 				$generator = new ImageGenerator(
 					array(
@@ -127,10 +127,14 @@ class Listings extends DirectoryStackCommand {
 
 			}
 
+			update_post_meta( $new_listing_id, 'submission_form_id', $r['form_id'] );
+
 			$notify->tick();
 		}
 
 		$notify->finish();
+
+		$this->generate_data();
 
 		WP_CLI::success( 'Successfully created random listings.' );
 
@@ -160,6 +164,132 @@ class Listings extends DirectoryStackCommand {
 		}
 
 		WP_CLI::success( 'Successfully deleted all listings.' );
+
+	}
+
+	/**
+	 * Generate data for listings.
+	 *
+	 * @return void
+	 */
+	private function generate_data() {
+
+		$excluded = array(
+			'tax-radio',
+			'tax-checkboxes',
+			'tax-select',
+			'tax-multiselect',
+			'tax-cascade-select',
+			'tax-cascade-multiselect',
+		);
+
+		$fields = ( new \DirectoryStack\Models\ListingField() )
+			->where( 'default_field', '=', null )
+			->where( 'type', 'NOT IN', $excluded )
+			->findAll()
+			->get();
+
+		$listings = ( new \DirectoryStack\Models\Listing() )
+			->findAll()
+			->get();
+
+		$faker = \Faker\Factory::create();
+
+		if ( ! empty( $fields ) ) {
+
+			$notify = \WP_CLI\Utils\make_progress_bar( 'Generating data for the listing fields.', count( $fields ) );
+
+			foreach ( $fields as $field ) {
+
+				if ( $field->type === 'file' ) {
+					continue;
+				}
+
+				switch ( $field->type ) {
+					case 'url':
+						foreach ( $listings as $listing ) {
+							$text = 'https://example.com';
+							update_post_meta( $listing->getID(), $field->metakey, $text );
+						}
+						break;
+					case 'email':
+						foreach ( $listings as $listing ) {
+							$text = $faker->safeEmail;
+							update_post_meta( $listing->getID(), $field->metakey, $text );
+						}
+						break;
+					case 'password':
+					case 'text':
+						foreach ( $listings as $listing ) {
+							$text = \Faker\Provider\Lorem::sentence( 10, true );
+							update_post_meta( $listing->getID(), $field->metakey, $text );
+						}
+						break;
+					case 'editor':
+					case 'textarea':
+						foreach ( $listings as $listing ) {
+							$text = \Faker\Provider\Lorem::paragraphs( 2, true );
+							update_post_meta( $listing->getID(), $field->metakey, $text );
+						}
+						break;
+					case 'multiselect':
+					case 'multicheckbox':
+						$options = $field->get_setting( 'selectable_options', array() );
+						$options = array_rand( $options, 2 );
+						foreach ( $listings as $listing ) {
+							update_post_meta( $listing->getID(), $field->metakey, $options );
+						}
+						break;
+					case 'radio':
+					case 'select':
+						$options = $field->get_setting( 'selectable_options', array() );
+						foreach ( $listings as $listing ) {
+							update_post_meta( $listing->getID(), $field->metakey, key( array_slice( $options, 1, 1, true ) ) );
+						}
+						break;
+					case 'checkbox':
+						foreach ( $listings as $listing ) {
+							update_post_meta( $listing->getID(), $field->metakey, true );
+						}
+						break;
+					case 'number':
+						foreach ( $listings as $listing ) {
+							update_post_meta( $listing->getID(), $field->metakey, \Faker\Provider\Base::randomNumber() );
+						}
+						break;
+				}
+
+				$notify->tick();
+			}
+
+			$notify->finish();
+
+			// Setup listing types.
+			$notify = \WP_CLI\Utils\make_progress_bar( 'Generating listing type for listings.', count( $listings ) );
+
+			foreach ( $listings as $listing ) {
+				$terms = get_terms(
+					array(
+						'taxonomy'   => 'listing_type',
+						'hide_empty' => false,
+						'number'     => 9999,
+					)
+				);
+
+				$random_terms = \Faker\Provider\Base::randomElements( $terms, 1 );
+
+				$termslist = array();
+				foreach ( $random_terms as $term ) {
+					$termslist[] = $term->term_id;
+				}
+				wp_set_post_terms( $listing->getID(), $termslist, 'listing_type' );
+
+				$notify->tick();
+			}
+
+			$notify->finish();
+
+		}
 
 	}
 
