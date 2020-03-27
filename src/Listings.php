@@ -73,6 +73,10 @@ class Listings extends DirectoryStackCommand {
 
 			update_post_meta( $new_listing_id, 'listing_location', $location );
 
+			update_post_meta( $new_listing_id, 'listing_email_address', $faker->safeEmail );
+
+			update_post_meta( $new_listing_id, 'listing_website', 'https://example.com' );
+
 			$taxonomies = \DirectoryStack\Helpers\Admin::get_registered_listings_taxonomies();
 
 			foreach ( $taxonomies as $tax_id => $tax_label ) {
