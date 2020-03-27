@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4490b88f9c0a0b449dfa2e2523643bf2",
+    "content-hash": "470f942bf9bca869bf45e6a9fa494a84",
     "packages": [
         {
             "name": "composer/installers",
@@ -179,6 +179,125 @@
                 "fixtures"
             ],
             "time": "2019-12-12T13:22:17+00:00"
+        },
+        {
+            "name": "intellex/generator",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/IntellexApps/generator.git",
+                "reference": "bf88a31520b3ec7a60ac0a6857641acd7e4fad38"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/IntellexApps/generator/zipball/bf88a31520b3ec7a60ac0a6857641acd7e4fad38",
+                "reference": "bf88a31520b3ec7a60ac0a6857641acd7e4fad38",
+                "shasum": ""
+            },
+            "require": {
+                "intellex/pixabay": "*"
+            },
+            "require-dev": {
+                "intellex/debugger": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Intellex\\Generator\\": "src\\"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ivan Sabo",
+                    "email": "sabo@intellex.rs"
+                },
+                {
+                    "name": "Aleksandar Stefanović",
+                    "email": "sale@intellex.rs"
+                }
+            ],
+            "time": "2019-03-09T00:19:44+00:00"
+        },
+        {
+            "name": "intellex/pixabay",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/IntellexApps/pixabay.git",
+                "reference": "97476adffcb123d58363fb9b4279489d15d7f0ce"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/IntellexApps/pixabay/zipball/97476adffcb123d58363fb9b4279489d15d7f0ce",
+                "reference": "97476adffcb123d58363fb9b4279489d15d7f0ce",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "php": ">=5.6"
+            },
+            "require-dev": {
+                "intellex/debugger": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Intellex\\Pixabay\\": "src\\"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ivan Sabo",
+                    "email": "sabo@intellex.rs"
+                }
+            ],
+            "time": "2019-05-10T15:05:56+00:00"
+        },
+        {
+            "name": "nicoverbruggen/image-generator",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nicoverbruggen/image-generator.git",
+                "reference": "e231546d69233fe04360867961f9feb02f703a80"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nicoverbruggen/image-generator/zipball/e231546d69233fe04360867961f9feb02f703a80",
+                "reference": "e231546d69233fe04360867961f9feb02f703a80",
+                "shasum": ""
+            },
+            "require": {
+                "ext-gd": ">=7.0",
+                "php": ">=7.0"
+            },
+            "type": "project",
+            "autoload": {
+                "psr-4": {
+                    "NicoVerbruggen\\ImageGenerator\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nico Verbruggen",
+                    "email": "nico.verb@gmail.com"
+                }
+            ],
+            "description": "Generate placeholder images with a specific size, color and text (optional).",
+            "time": "2017-12-06T21:00:58+00:00"
         },
         {
             "name": "pressmodo/wp-requirements",
