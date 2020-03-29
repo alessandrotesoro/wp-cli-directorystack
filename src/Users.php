@@ -46,7 +46,7 @@ class Users extends DirectoryStackCommand {
 			$assoc_args,
 			array(
 				'number' => 30,
-				'key' => false,
+				'key'    => false,
 			)
 		);
 
@@ -78,7 +78,7 @@ class Users extends DirectoryStackCommand {
 	 * @param array $avatars list of avatars found from the api.
 	 * @return void
 	 */
-	private function register_user( $avatars = [] ) {
+	private function register_user( $avatars = array() ) {
 
 		$faker = \Faker\Factory::create();
 
@@ -124,17 +124,17 @@ class Users extends DirectoryStackCommand {
 	 */
 	private function get_avatars( $number = 30, $key ) {
 
-		$avatars = [];
+		$avatars = array();
 
 		$query = wp_remote_get(
 			'https://uifaces.co/api?limit=' . $number,
-			[
-				'headers' => [
+			array(
+				'headers' => array(
 					'X-API-KEY'     => $key,
 					'Accept'        => 'application/json',
 					'Cache-Control' => 'no-cache',
-				],
-			]
+				),
+			)
 		);
 
 		$response = json_decode( wp_remote_retrieve_body( $query ) );
@@ -146,6 +146,86 @@ class Users extends DirectoryStackCommand {
 		}
 
 		return $avatars;
+
+	}
+
+	/**
+	 * Generate custom fields data for all users.
+	 *
+	 * @return void
+	 */
+	public function generate_data() {
+
+		// WP_User_Query arguments
+		$args = array(
+			'number' => -1,
+			'fields' => array( 'id' ),
+		);
+
+		// The User Query
+		$user_query = new \WP_User_Query( $args );
+
+		$number = count( $user_query->get_results() );
+
+		$faker = \Faker\Factory::create();
+
+		$notify = \WP_CLI\Utils\make_progress_bar( "Generating $number users(s)", $number );
+
+		$custom_fields = ( new \DirectoryStack\Models\UserField() )
+			->where( 'default_field', '=', null )
+			->findAll()
+			->get();
+
+		foreach ( $user_query->get_results() as $user ) {
+
+			$id = $user->id;
+
+			foreach ( $custom_fields as $field ) {
+				switch ( $field->type ) {
+					case 'url':
+						$text = 'https://example.com';
+						update_user_meta( $id, $field->metakey, $text );
+						break;
+					case 'email':
+						$text = $faker->safeEmail;
+						update_user_meta( $id, $field->metakey, $text );
+						break;
+					case 'text':
+						$text = \Faker\Provider\Lorem::sentence( 10, true );
+						update_user_meta( $id, $field->metakey, $text );
+						break;
+					case 'editor':
+					case 'textarea':
+						$text = \Faker\Provider\Lorem::paragraphs( 2, true );
+						update_user_meta( $id, $field->metakey, $text );
+						break;
+					case 'multiselect':
+					case 'multicheckbox':
+						$options = $field->get_setting( 'selectable_options', array() );
+						$options = array_rand( $options, 2 );
+						update_user_meta( $id, $field->metakey, $options );
+						break;
+					case 'radio':
+					case 'select':
+						$options = $field->get_setting( 'selectable_options', array() );
+						update_user_meta( $id, $field->metakey, key( array_slice( $options, 1, 1, true ) ) );
+						break;
+					case 'checkbox':
+						update_user_meta( $id, $field->metakey, true );
+						break;
+					case 'number':
+						update_user_meta( $id, $field->metakey, \Faker\Provider\Base::randomNumber() );
+						break;
+				}
+			}
+
+			$notify->tick();
+
+		}
+
+		$notify->finish();
+
+		WP_CLI::success( 'Done.' );
 
 	}
 
