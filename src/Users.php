@@ -29,41 +29,44 @@ class Users extends DirectoryStackCommand {
 	 * [--number=<number>]
 	 * : Number of users to generate.
 	 *
+	 * [--key=<key>]
+	 * : uifaces.co api key to retrieve avatars.
+	 *
 	 * @param array $args arguments.
 	 * @param array $assoc_args arguments.
 	 * @return void
 	 */
 	public function generate( $args, $assoc_args ) {
 
-		$r = wp_parse_args(
-			$assoc_args,
-			array(
-				'number' => 1,
-			)
-		);
-
-		$number = $r['number'];
-
 		if ( is_multisite() ) {
 			WP_CLI::error( 'Multisite is not supported!' );
 		}
 
-		if ( $number > 1 ) {
+		$r = wp_parse_args(
+			$assoc_args,
+			array(
+				'number' => 30,
+				'key' => false,
+			)
+		);
 
-			$notify = \WP_CLI\Utils\make_progress_bar( "Generating $number users(s)", $number );
+		$number = absint( $r['number'] );
+		$key    = $r['key'];
 
-			foreach ( range( 0, $number ) as $i ) {
-				$this->register_user();
-				$notify->tick();
-			}
-
-			$notify->finish();
-
-		} else {
-
-			$this->register_user();
-
+		if ( ! $key ) {
+			WP_CLI::error( 'No api key provided.' );
 		}
+
+		$avatars = $this->get_avatars( $number, $key );
+
+		$notify = \WP_CLI\Utils\make_progress_bar( "Generating $number users(s)", $number );
+
+		foreach ( range( 0, $number ) as $i ) {
+			$notify->tick();
+			$this->register_user( $avatars );
+		}
+
+		$notify->finish();
 
 		WP_CLI::success( 'Done.' );
 
@@ -72,9 +75,10 @@ class Users extends DirectoryStackCommand {
 	/**
 	 * Create a random user.
 	 *
+	 * @param array $avatars list of avatars found from the api.
 	 * @return void
 	 */
-	private function register_user() {
+	private function register_user( $avatars = [] ) {
 
 		$faker = \Faker\Factory::create();
 
@@ -85,6 +89,21 @@ class Users extends DirectoryStackCommand {
 		$create_user = wp_create_user( $username, $password, $email );
 
 		if ( ! is_wp_error( $create_user ) ) {
+
+			$random_avatar = \Faker\Provider\Base::randomElements( $avatars, 1 );
+			$avatar        = false;
+
+			if ( isset( $random_avatar[0] ) && ! empty( $random_avatar[0] ) ) {
+				$avatar = ds_rest_upload_image_from_url( $random_avatar[0] );
+			}
+
+			if ( is_array( $avatar ) ) {
+				$att_id = ds_rest_set_uploaded_image_as_attachment( $avatar );
+				if ( $att_id ) {
+					update_user_meta( $create_user, 'user_avatar', $att_id );
+				}
+			}
+
 			wp_update_user(
 				array(
 					'ID'         => $create_user,
@@ -93,6 +112,40 @@ class Users extends DirectoryStackCommand {
 				)
 			);
 		}
+
+	}
+
+	/**
+	 * Get avatars from the api.
+	 *
+	 * @param integer $number the number of avatars to load.
+	 * @param string  $key the api key.
+	 * @return array
+	 */
+	private function get_avatars( $number = 30, $key ) {
+
+		$avatars = [];
+
+		$query = wp_remote_get(
+			'https://uifaces.co/api?limit=' . $number,
+			[
+				'headers' => [
+					'X-API-KEY'     => $key,
+					'Accept'        => 'application/json',
+					'Cache-Control' => 'no-cache',
+				],
+			]
+		);
+
+		$response = json_decode( wp_remote_retrieve_body( $query ) );
+
+		if ( ! empty( $response ) && is_array( $response ) ) {
+			foreach ( $response as $profile ) {
+				$avatars[] = esc_url( $profile->photo );
+			}
+		}
+
+		return $avatars;
 
 	}
 
