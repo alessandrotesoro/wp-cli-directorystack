@@ -297,4 +297,59 @@ class Listings extends DirectoryStackCommand {
 
 	}
 
+	/**
+	 * Generate random statuses for listings.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     $ wp ds listings random_status --number=10
+	 *
+	 * @param array $args command arguments.
+	 * @param array $assoc_args command arguments.
+	 * @return void
+	 */
+	public function random_status( $args, $assoc_args ) {
+
+		$r = wp_parse_args(
+			$assoc_args,
+			array(
+				'number' => 10,
+			)
+		);
+
+		$listings = new \WP_Query(
+			[
+				'post_type'      => 'listing',
+				'posts_per_page' => -1,
+				'fields'         => 'ids',
+			]
+		);
+
+		$random_ids = \Faker\Provider\Base::randomElements( $listings->get_posts(), $r['number'] );
+
+		$statuses = array_keys( \DirectoryStack\Helpers\Listings::get_statuses() );
+
+		unset( $statuses['publish'] );
+
+		$notify = \WP_CLI\Utils\make_progress_bar( 'Generating random statuses for listings.', $r['number'] );
+
+		foreach ( $random_ids as $id ) {
+
+			$random_status = \Faker\Provider\Base::randomElements( $statuses, 1 );
+
+			$args = array(
+				'ID'          => $id,
+				'post_status' => $random_status[0],
+			);
+
+			wp_update_post( $args );
+
+			$notify->tick();
+
+		}
+
+		$notify->finish();
+
+	}
+
 }
