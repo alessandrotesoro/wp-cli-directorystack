@@ -25,7 +25,8 @@
 		"composer/installers": "~1.0",
 		"pressmodo/wp-requirements": "^1.0",
 		"fzaninotto/faker": "^1.9",
-		"intellex/generator": "^1.0"
+		"intellex/generator": "^1.0",
+		"nicoverbruggen/image-generator": "^0.1.0"
 	},
 	"autoload": {
 		"psr-4": {

@@ -77,6 +77,8 @@ class Listings extends DirectoryStackCommand {
 
 			update_post_meta( $new_listing_id, 'listing_website', 'https://example.com' );
 
+			update_post_meta( $new_listing_id, 'listing_phone_number', $faker->e164PhoneNumber );
+
 			$taxonomies = \DirectoryStack\Helpers\Admin::get_registered_listings_taxonomies();
 
 			foreach ( $taxonomies as $tax_id => $tax_label ) {
@@ -254,6 +256,11 @@ class Listings extends DirectoryStackCommand {
 					case 'checkbox':
 						foreach ( $listings as $listing ) {
 							update_post_meta( $listing->getID(), $field->metakey, true );
+						}
+						break;
+					case 'phone':
+						foreach ( $listings as $listing ) {
+							update_post_meta( $listing->getID(), $field->metakey, $faker->e164PhoneNumber );
 						}
 						break;
 					case 'number':

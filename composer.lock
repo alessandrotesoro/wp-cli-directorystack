@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d935d4ec2adcb32fa4043c69ad331bc3",
+    "content-hash": "470f942bf9bca869bf45e6a9fa494a84",
     "packages": [
         {
             "name": "composer/installers",
@@ -261,6 +261,43 @@
                 }
             ],
             "time": "2019-05-10T15:05:56+00:00"
+        },
+        {
+            "name": "nicoverbruggen/image-generator",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nicoverbruggen/image-generator.git",
+                "reference": "e231546d69233fe04360867961f9feb02f703a80"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nicoverbruggen/image-generator/zipball/e231546d69233fe04360867961f9feb02f703a80",
+                "reference": "e231546d69233fe04360867961f9feb02f703a80",
+                "shasum": ""
+            },
+            "require": {
+                "ext-gd": ">=7.0",
+                "php": ">=7.0"
+            },
+            "type": "project",
+            "autoload": {
+                "psr-4": {
+                    "NicoVerbruggen\\ImageGenerator\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nico Verbruggen",
+                    "email": "nico.verb@gmail.com"
+                }
+            ],
+            "description": "Generate placeholder images with a specific size, color and text (optional).",
+            "time": "2017-12-06T21:00:58+00:00"
         },
         {
             "name": "pressmodo/wp-requirements",
