@@ -302,6 +302,8 @@ class Listings extends DirectoryStackCommand {
 
 		}
 
+		WP_CLI::success( 'Done.' );
+
 	}
 
 	/**
@@ -356,6 +358,61 @@ class Listings extends DirectoryStackCommand {
 		}
 
 		$notify->finish();
+
+		WP_CLI::success( 'Done.' );
+
+	}
+
+	/**
+	 * Mark random listings as featured.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [--number=<number>]
+	 * : Number of listings to mark as featured. 10 by default.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     $ wp ds listings featurify --number=10
+	 *
+	 * @param array $args command arguments.
+	 * @param array $assoc_args command arguments.
+	 * @return void
+	 */
+	public function featurify( $args, $assoc_args ) {
+
+		$r = wp_parse_args(
+			$assoc_args,
+			array(
+				'number' => 10,
+			)
+		);
+
+		$amount = absint( $r['number'] );
+
+		$listings = new \WP_Query(
+			[
+				'post_type'      => 'listing',
+				'posts_per_page' => -1,
+				'fields'         => 'ids',
+			]
+		);
+
+		$random_ids = \Faker\Provider\Base::randomElements( $listings->get_posts(), $amount );
+
+		$notify = \WP_CLI\Utils\make_progress_bar( 'Setting random listings as featured.', $amount );
+
+		foreach ( $random_ids as $id ) {
+
+			ds_mark_listing_as_featured( $id );
+
+			$notify->tick();
+
+		}
+
+		$notify->finish();
+
+		WP_CLI::success( 'Done.' );
 
 	}
 
