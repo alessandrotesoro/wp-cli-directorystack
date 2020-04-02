@@ -79,6 +79,8 @@ class Listings extends DirectoryStackCommand {
 
 			update_post_meta( $new_listing_id, 'listing_phone_number', $faker->e164PhoneNumber );
 
+			update_post_meta( $new_listing_id, 'listing_social_profiles', 'a:4:{i:15858399605280;a:2:{s:7:"network";s:8:"facebook";s:3:"url";s:20:"https://facebook.com";}i:15858399679231;a:2:{s:7:"network";s:7:"twitter";s:3:"url";s:19:"https://twitter.com";}i:15858399872973;a:2:{s:7:"network";s:9:"instagram";s:3:"url";s:21:"https://instagram.com";}i:15858399750622;a:2:{s:7:"network";s:7:"youtube";s:3:"url";s:19:"https://youtube.com";}}' );
+
 			$taxonomies = \DirectoryStack\Helpers\Admin::get_registered_listings_taxonomies();
 
 			foreach ( $taxonomies as $tax_id => $tax_label ) {
