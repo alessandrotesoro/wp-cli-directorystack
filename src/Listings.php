@@ -81,6 +81,23 @@ class Listings extends DirectoryStackCommand {
 
 			update_post_meta( $new_listing_id, 'listing_social_profiles', 'a:4:{i:15858399605280;a:2:{s:7:"network";s:8:"facebook";s:3:"url";s:20:"https://facebook.com";}i:15858399679231;a:2:{s:7:"network";s:7:"twitter";s:3:"url";s:19:"https://twitter.com";}i:15858399872973;a:2:{s:7:"network";s:9:"instagram";s:3:"url";s:21:"https://instagram.com";}i:15858399750622;a:2:{s:7:"network";s:7:"youtube";s:3:"url";s:19:"https://youtube.com";}}' );
 
+			update_post_meta( $new_listing_id, 'monday_timeslots', 'hours' );
+			update_post_meta( $new_listing_id, 'tuesday_timeslots', 'hours' );
+			update_post_meta( $new_listing_id, 'wednesday_timeslots', 'hours' );
+			update_post_meta( $new_listing_id, 'thursday_timeslots', 'hours' );
+			update_post_meta( $new_listing_id, 'friday_timeslots', 'appointment' );
+			update_post_meta( $new_listing_id, 'saturday_timeslots', 'appointment' );
+			update_post_meta( $new_listing_id, 'sunday_timeslots', 'closed_all_day' );
+
+			update_post_meta( $new_listing_id, 'monday_opening_time', '08:00' );
+			update_post_meta( $new_listing_id, 'monday_closing_time', '19:00' );
+			update_post_meta( $new_listing_id, 'tuesday_opening_time', '08:00' );
+			update_post_meta( $new_listing_id, 'tuesday_closing_time', '19:00' );
+			update_post_meta( $new_listing_id, 'wednesday_opening_time', '08:00' );
+			update_post_meta( $new_listing_id, 'wednesday_closing_time', '19:00' );
+			update_post_meta( $new_listing_id, 'thursday_opening_time', '08:00' );
+			update_post_meta( $new_listing_id, 'thursday_closing_time', '19:00' );
+
 			$taxonomies = \DirectoryStack\Helpers\Admin::get_registered_listings_taxonomies();
 
 			foreach ( $taxonomies as $tax_id => $tax_label ) {
@@ -329,11 +346,11 @@ class Listings extends DirectoryStackCommand {
 		);
 
 		$listings = new \WP_Query(
-			[
+			array(
 				'post_type'      => 'listing',
 				'posts_per_page' => -1,
 				'fields'         => 'ids',
-			]
+			)
 		);
 
 		$random_ids = \Faker\Provider\Base::randomElements( $listings->get_posts(), $r['number'] );
@@ -393,11 +410,11 @@ class Listings extends DirectoryStackCommand {
 		$amount = absint( $r['number'] );
 
 		$listings = new \WP_Query(
-			[
+			array(
 				'post_type'      => 'listing',
 				'posts_per_page' => -1,
 				'fields'         => 'ids',
-			]
+			)
 		);
 
 		$random_ids = \Faker\Provider\Base::randomElements( $listings->get_posts(), $amount );
