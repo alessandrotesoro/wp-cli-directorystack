@@ -109,6 +109,10 @@ class Listings extends DirectoryStackCommand {
 					)
 				);
 
+				if ( empty( $terms ) ) {
+					continue;
+				}
+
 				$random_terms = \Faker\Provider\Base::randomElements( $terms, 3 );
 
 				$termslist = array();
